@@ -83,8 +83,8 @@ def write_to_mongo(db, key, data):
     """
     client = pymongo.MongoClient(db['host'], db['port'])
     collect = client.get_database(db['name']).get_collection(db['collectionname'])
-    data = map(lambda x: update_func(x, "post_time", key), data)
-    collect.insert(data)
+    write_data = map(lambda x: update_func(x, "post_time", key), data)
+    collect.insert(write_data)
 
 
 def write_to_aim():
@@ -97,9 +97,9 @@ def write_to_aim():
     for to_key in tqdm.tqdm(to_keys):
         dd = random.choice(all_from_data)
         write_len = len(dd) - random.choice(BOUND)
-        dd = random.sample(dd, write_len)
+        final_dd = random.sample(dd, write_len)
         logging.info(f"向{to_key}写入{write_len}条数据")
-        write_to_mongo(get_db_config(), to_key, dd)
+        write_to_mongo(get_db_config(), to_key, final_dd)
         logging.info(f"写入{to_key}完成")
 
 
