@@ -3,7 +3,10 @@ import pymongo
 import random
 from os.path import exists
 import pickle
+import logging
+import tqdm
 
+logging.basicConfig()
 CONFIG_FILE = "config.yaml"
 COMMON_PREFIX = "GGQMONGO"
 BOUND = range(100, 200)  # 默认跳过的数量区间
@@ -85,12 +88,19 @@ def write_to_mongo(db, key, data):
 
 
 def write_to_aim():
+    logging.info("加载配置文件")
     from_keys, to_keys = get_config()
-    all_from_data = [read_from_data(key) for key in from_keys]
-    for to_key in to_keys:
+    logging.info(f"从{from_keys}填充到{to_keys}")
+    logging.info("加载数据中....")
+    all_from_data = [read_from_data(key) for key in tqdm.tqdm(from_keys)]
+    logging.info("开始写入数据")
+    for to_key in tqdm.tqdm(to_keys):
         dd = random.choice(all_from_data)
-        dd = random.sample(dd, len(dd) - random.choice(BOUND))
+        write_len = len(dd) - random.choice(BOUND)
+        dd = random.sample(dd, write_len)
+        logging.info(f"向{to_key}写入{write_len}条数据")
         write_to_mongo(get_db_config(), to_key, dd)
+        logging.info(f"写入{to_key}完成")
 
 
 if __name__ == '__main__':
