@@ -101,6 +101,7 @@ def write_to_aim():
     logging.info("开始写入数据")
     for to_key in tqdm.tqdm(to_keys):
         from_key = random.choice(from_keys)
+        logging.info(f"当前选择读取的数据源为{from_key}")
         dd = read_from_data(from_key)
         write_len = len(dd) - random.choice(BOUND)
         while write_len <= 100:
