@@ -103,7 +103,7 @@ def write_to_aim():
         from_key = random.choice(from_keys)
         dd = read_from_data(from_key)
         write_len = len(dd) - random.choice(BOUND)
-        while write_len > 0:
+        while write_len <= 0:
             logging.info(f"当前选择的key对应的数据长度过小!当前key为{from_key}，考虑删除掉此key")
             from_key = random.choice(from_keys)
             dd = read_from_data(from_key)
