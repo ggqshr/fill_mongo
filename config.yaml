@@ -1,9 +1,15 @@
 from:
-  - 2019年05月09日
+  - 2019年08月28日
+  - 2019年08月30日
+  - 2019年09月01日
+  - 2019年09月02日
 to:
   - 2019年08月15日
+  - 2019年08月18日
+  - 2019年08月17日
+  - 2019年08月16日
 db:
   host: 119.23.224.186
   port: 19995
   name: LiePin
-  collectionname: LiePin
+  collectionname: LiePin_copy1
