@@ -49,7 +49,7 @@ def read_from_data(key):
         with open(key_file_name, "rb") as f:
             return pickle.load(f)
     # 如果本地没有数据，就需要从mongo中读取，然后存储到本地
-    mongo_data = [dd for dd in get_data_from_mongo(db_config, key)]
+    mongo_data = [dd.copy() for dd in get_data_from_mongo(db_config, key)]
     with open(key_file_name, "wb") as f:
         pickle.dump(mongo_data, f)
     return mongo_data
