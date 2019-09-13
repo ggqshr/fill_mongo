@@ -102,7 +102,7 @@ def write_to_aim():
     for to_key in tqdm.tqdm(to_keys):
         dd = random.choice(all_from_data)
         write_len = len(dd) - random.choice(BOUND)
-        final_dd = random.sample(dd, write_len)
+        final_dd = random.sample(dd, write_len).copy()
         logging.info(f"向{to_key}写入{write_len}条数据")
         write_to_mongo(get_db_config(), to_key, final_dd)
         logging.info(f"写入{to_key}完成")
