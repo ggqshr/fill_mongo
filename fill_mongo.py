@@ -103,6 +103,9 @@ def write_to_aim():
         from_key = random.choice(from_keys)
         dd = read_from_data(from_key)
         write_len = len(dd) - random.choice(BOUND)
+        if write_len <= 0:
+            logging.info(f"当前选择的key对应的数据长度过小!当前key为{from_key}，考虑删除掉此key")
+            continue
         final_dd = random.sample(dd, write_len).copy()
         logging.info(f"向{to_key}写入{write_len}条数据")
         write_to_mongo(obj.get_db(), to_key, final_dd)
