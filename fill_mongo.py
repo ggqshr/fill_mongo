@@ -96,11 +96,10 @@ def write_to_aim():
     logging.info("加载配置文件")
     from_keys, to_keys = get_config()
     logging.info(f"从{from_keys}填充到{to_keys}")
-    logging.info("加载数据中....")
-    all_from_data = [read_from_data(key) for key in tqdm.tqdm(from_keys)]
     logging.info("开始写入数据")
     for to_key in tqdm.tqdm(to_keys):
-        dd = random.choice(all_from_data)
+        from_key = random.choice(from_keys)
+        dd = read_from_data(from_key)
         write_len = len(dd) - random.choice(BOUND)
         final_dd = random.sample(dd, write_len).copy()
         logging.info(f"向{to_key}写入{write_len}条数据")
