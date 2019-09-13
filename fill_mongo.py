@@ -9,28 +9,30 @@ import base64
 
 logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "config.yaml"
-COMMON_PREFIX = "GGQMONGO"
-BOUND = range(100, 200)  # 默认跳过的数量区间
+BOUND = range(3000, 6000)  # 随机对数据进行减少，防止数据都一样
 
 
-def get_config() -> (list, list):
-    """
-    用来读取配置文件，配置文件中会标明要把哪几天的数据填充到另外哪几天
-    :return:
-    """
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        config_data = yaml.load(f.read(), Loader=yaml.FullLoader)
-    return config_data['from'], config_data['to']
+class ConfigObj:
+    obj = None
+
+    def __init__(self):
+        with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+            self.obj = yaml.load(f.read(), Loader=yaml.FullLoader)
+
+    def get_db(self):
+        return self.obj['db']
+
+    def get_keys(self):
+        return self.obj['from'], self.obj['to']
+
+    def get_field_name(self):
+        return self.obj['field_name'] if self.obj['field_name'] is not None else "post_time"
+
+    def get(self, k: str):
+        return self.obj[k]
 
 
-def get_db_config():
-    """
-    用来读取mongo数据库的位置
-    :return: 数据库的host以及port以及数据库名和集合名
-    """
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        config_data = yaml.load(f.read(), Loader=yaml.FullLoader)
-    return config_data['db']
+obj = ConfigObj()
 
 
 def read_from_data(key):
@@ -39,7 +41,7 @@ def read_from_data(key):
     :param key: 拿去数据的key
     :return: 根据key拿到的数据
     """
-    db_config = get_db_config()
+    db_config = obj.get_db()
     flag = str(base64.b64encode(
         f"{db_config['host']}:{db_config['port']}{db_config['name']}{db_config['collectionname']}".encode("utf-8")),
         "utf-8")
@@ -88,13 +90,13 @@ def write_to_mongo(db, key, data):
     """
     client = pymongo.MongoClient(db['host'], db['port'])
     collect = client.get_database(db['name']).get_collection(db['collectionname'])
-    write_data = map(lambda x: update_func(x, "post_time", key), data)
+    write_data = map(lambda x: update_func(x, obj.get_field_name(), key), data)
     collect.insert_many(write_data)
 
 
 def write_to_aim():
     logging.info("加载配置文件")
-    from_keys, to_keys = get_config()
+    from_keys, to_keys = obj.get_keys()
     logging.info(f"从{from_keys}填充到{to_keys}")
     logging.info("开始写入数据")
     for to_key in tqdm.tqdm(to_keys):
@@ -103,8 +105,9 @@ def write_to_aim():
         write_len = len(dd) - random.choice(BOUND)
         final_dd = random.sample(dd, write_len).copy()
         logging.info(f"向{to_key}写入{write_len}条数据")
-        write_to_mongo(get_db_config(), to_key, final_dd)
+        write_to_mongo(obj.get_db(), to_key, final_dd)
         logging.info(f"写入{to_key}完成")
+        del dd
 
 
 if __name__ == '__main__':

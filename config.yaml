@@ -13,3 +13,5 @@ db:
   port: 27017
   name: LiePin
   collectionname: LiePin_copy1
+
+field_name: post_time
