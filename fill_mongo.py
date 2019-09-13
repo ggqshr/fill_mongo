@@ -6,7 +6,7 @@ import pickle
 import logging
 import tqdm
 
-logging.basicConfig()
+logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "config.yaml"
 COMMON_PREFIX = "GGQMONGO"
 BOUND = range(100, 200)  # 默认跳过的数量区间
