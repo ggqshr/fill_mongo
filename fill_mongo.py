@@ -5,6 +5,7 @@ from os.path import exists
 import pickle
 import logging
 import tqdm
+import base64
 
 logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "config.yaml"
@@ -38,13 +39,17 @@ def read_from_data(key):
     :param key: 拿去数据的key
     :return: 根据key拿到的数据
     """
-    key_file_name = f".{COMMON_PREFIX}{key}"
+    db_config = get_db_config()
+    flag = str(base64.b64encode(
+        f"{db_config['host']}:{db_config['port']}{db_config['name']}{db_config['collectionname']}".encode("utf-8")),
+        "utf-8")
+    key_file_name = f".{flag}-{key}"
     # 如果本地有缓存的数据就从缓存中拿去数据
     if exists(key_file_name):
         with open(key_file_name, "rb") as f:
             return pickle.load(f)
     # 如果本地没有数据，就需要从mongo中读取，然后存储到本地
-    mongo_data = [dd for dd in get_data_from_mongo(get_db_config(), key)]
+    mongo_data = [dd for dd in get_data_from_mongo(db_config, key)]
     with open(key_file_name, "wb") as f:
         pickle.dump(mongo_data, f)
     return mongo_data
@@ -84,7 +89,7 @@ def write_to_mongo(db, key, data):
     client = pymongo.MongoClient(db['host'], db['port'])
     collect = client.get_database(db['name']).get_collection(db['collectionname'])
     write_data = map(lambda x: update_func(x, "post_time", key), data)
-    collect.insert(write_data)
+    collect.insert_many(write_data)
 
 
 def write_to_aim():
