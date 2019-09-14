@@ -1,4 +1,4 @@
-import yaml
+﻿import yaml
 import pymongo
 import random
 from os.path import exists
@@ -9,7 +9,7 @@ import base64
 
 logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "config.yaml"
-BOUND = range(3000, 6000)  # 随机对数据进行减少，防止数据都一样
+BOUND = range(100, 300)  # 随机对数据进行减少，防止数据都一样
 
 
 class ConfigObj:
