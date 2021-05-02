@@ -65,6 +65,7 @@ def get_data_from_mongo(db, key):
     :return: 拿取的数据
     """
     client = pymongo.MongoClient(db['host'], db['port'])
+    client.admin.authenticate("jason#619", "jason#619")
     collect = client.get_database(db['name']).get_collection(db['collectionname'])
     data = collect.find(
         filter={"post_time": key},
@@ -89,6 +90,7 @@ def write_to_mongo(db, key, data):
     :return:
     """
     client = pymongo.MongoClient(db['host'], db['port'])
+    client.admin.authenticate("jason#619", "jason#619")
     collect = client.get_database(db['name']).get_collection(db['collectionname'])
     write_data = map(lambda x: update_func(x, obj.get_field_name(), key), data)
     collect.insert_many(write_data)
