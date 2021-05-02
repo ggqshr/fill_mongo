@@ -83,10 +83,17 @@ def get_data_from_mongo(db, key):
 def update_func(x, key, value):
     x.update({key: value})
     this_id = x.get("id",None)
-    if this_id is not None:
+    if this_id is None:
+        return x
+    if type(this_id) is str:
         random_index = random.choice(list(range(len(this_id))))
         this_id[random_index] = random.choice(random_list)
         x['id'] = this_id
+    else:
+        this_id = str(this_id)
+        random_index = random.choice(list(range(len(this_id))))
+        this_id[random_index] = random.choice(list(range(0,10)))
+        x['id'] = int(this_id)
     return x
 
 
