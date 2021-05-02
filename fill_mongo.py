@@ -10,7 +10,11 @@ import base64
 logging.basicConfig(level=logging.INFO)
 CONFIG_FILE = "config.yaml"
 BOUND = range(3000, 6000)  # 随机对数据进行减少，防止数据都一样
-
+random_list = []
+for i in range(65,91):
+    random_list.append(chr(i))
+for i in range(0,10):
+    random_list.append(i)
 
 class ConfigObj:
     obj = None
@@ -78,6 +82,11 @@ def get_data_from_mongo(db, key):
 
 def update_func(x, key, value):
     x.update({key: value})
+    this_id = x.get("id",None)
+    if this_id is not None:
+        random_index = random.choice(list(range(len(this_id))))
+        this_id[random_index] = random.choice(random_list)
+        x['id'] = this_id
     return x
 
 
