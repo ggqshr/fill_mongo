@@ -87,7 +87,7 @@ def update_func(x, key, value):
         return x
     if type(this_id) is str:
         random_index = random.choice(list(range(len(this_id))))
-        this_id = this_id[:random_index] + random.choice(random_list) + this_id[random_index:]
+        this_id = this_id[:random_index] + str(random.choice(random_list)) + this_id[random_index:]
         x['id'] = this_id
     else:
         this_id = str(this_id)
